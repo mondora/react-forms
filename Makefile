@@ -9,6 +9,7 @@ lint:
 
 clean:
 	@rm -rf ./node_modules/
+	@rm -rf ./dist
 
 test:
 	@NODE_PATH=$(NODE_PATH) $(BIN)/mochify -R dot $(TESTS) $(INTEGRATION_TESTS)
@@ -39,7 +40,11 @@ release-minor: test lint
 release-major: test lint
 	@$(call release,major)
 
-publish:
+build:
+	@mkdir -p dist
+	@NODE_PATH=$(NODE_PATH) $(BIN)/browserify -s react-forms --no-bundle-external -o dist/index.js lib/index.js
+
+publish: build
 	@git push --tags origin HEAD:master
 	@npm publish
 	@$(MAKE) -C docs publish
